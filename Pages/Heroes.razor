@@ -1,0 +1,64 @@
+@page "/heroes"
+@using HeroesOfBlazor.Interfaces
+@using HeroesOfBlazor.Entities
+@using System.Linq.Dynamic.Core
+@inject IHeroesService HeroesService
+
+<h3>Heroes</h3>
+<RadzenButton Text="Reset Grid" Click="@Reset" class="my-5"/>
+<RadzenDataGrid Count="@_count" Data="@_heroes" TItem="Hero"
+                @ref="_grid" IsLoading="@_isLoading" LoadData="@LoadData"
+                AllowFiltering="true" AllowColumnResize="false" AllowAlternatingRows="false"
+                FilterMode="FilterMode.Advanced" AllowSorting="false" PageSize="5" AllowPaging="true"
+                PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
+    <LoadingTemplate>
+        <div style="text-align: center; padding: 1rem;">
+            <div class="spinner-border" role="status"></div>
+        </div>
+    </LoadingTemplate>
+    <EmptyTemplate>
+        <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">No heroes to display.</p>
+    </EmptyTemplate>
+    <Columns>
+        <RadzenDataGridColumn TItem="Hero" Title="Id" HeaderCssClass="fw-bold" Property="Id"/>
+        <RadzenDataGridColumn TItem="Hero" Title="Hero Name" HeaderCssClass="fw-bold" Property="HeroName"/>
+        <RadzenDataGridColumn TItem="Hero" Title="First Name" HeaderCssClass="fw-bold" Property="FirstName"/>
+        <RadzenDataGridColumn TItem="Hero" Title="Last Name" HeaderCssClass="fw-bold" Property="LastName"/>
+        <RadzenDataGridColumn TItem="Hero" Title="City" HeaderCssClass="fw-bold" Property="City"/>
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    private RadzenDataGrid<Hero> _grid;
+    private IEnumerable<Hero>? _heroes;
+    private bool _isLoading = false;
+    private int _count = 0;
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        _isLoading = true;
+        await Task.Yield();
+        var query = await HeroesService.GetHeroesQueryableAsync();
+        
+        if (!string.IsNullOrEmpty(args.Filter))
+        {
+            query = query.Where(args.Filter);
+        }
+
+        if (!string.IsNullOrEmpty(args.OrderBy))
+        {
+            query = query.OrderBy(args.OrderBy);
+        }
+
+        _count = query.Count();
+        _heroes = query.Skip(args.Skip.Value).Take(args.Top.Value).ToList();
+        _isLoading = false;
+    }
+
+    private async Task Reset()
+    {
+        _grid.Reset(true);
+        await _grid.FirstPage(true);
+    }
+
+}

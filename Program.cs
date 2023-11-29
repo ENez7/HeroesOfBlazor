@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using HeroesOfBlazor.Areas.Identity;
 using HeroesOfBlazor.Data;
+using HeroesOfBlazor.Interfaces;
+using HeroesOfBlazor.Services;
 using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,8 +26,7 @@ builder.Services.AddRadzenComponents();
 
 builder.Services
     .AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-builder.Services.AddSingleton<WeatherForecastService>();
-
+builder.Services.AddScoped<IHeroesService, HeroesService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
