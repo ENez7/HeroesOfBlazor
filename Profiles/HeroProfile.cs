@@ -9,5 +9,6 @@ public class HeroProfile : Profile
     public HeroProfile()
     {
         CreateMap<CreateHeroDto, Hero>().ReverseMap();
+        CreateMap<UpdateHeroDto, Hero>().ReverseMap();
     }
 }

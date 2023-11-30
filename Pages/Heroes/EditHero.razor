@@ -13,59 +13,80 @@
 <h4>Hero Details</h4>
 <hr>
 
-<RadzenColumn Size="12" SizeMD="6" SizeLG="3">
-    <RadzenTemplateForm TItem="CreateHeroDto">
-        <RadzenFormField Text="Hero's Name" Variant="Variant.Text" Style="width: 100%;" class="my-5">
-            <RadzenTextBox @bind-Value="@_hero.HeroName" Style="width: 100%;" ReadOnly="true"/>
-        </RadzenFormField>
-        <RadzenFormField Text="First Name" Variant="Variant.Text" Style="width: 100%;" class="mb-5">
-            <RadzenTextBox @bind-Value="@_hero.FirstName" Style="width: 100%;"/>
-        </RadzenFormField>
-        <RadzenFormField Text="Last Name" Variant="Variant.Text" Style="width: 100%;" class="mb-5">
-            <RadzenTextBox @bind-Value="@_hero.LastName" Style="width: 100%;"/>
-        </RadzenFormField>
-        <RadzenFormField Text="City of residence" Variant="Variant.Text" Style="width: 100%;" class="mb-5">
-            <RadzenTextBox @bind-Value="@_hero.City" Style="width: 100%;"/>
-        </RadzenFormField>
-        <RadzenButton Text="Update hero"/>
-    </RadzenTemplateForm>
-</RadzenColumn>
+<div class="d-flex justify-content-center">
+    <RadzenColumn Size="12" SizeMD="6" SizeLG="3">
+        <RadzenTemplateForm TItem="UpdateHeroDto" Data="@_hero" Submit="@OnSubmit" InvalidSubmit="@OnInvalidSubmit">
+            <RadzenFormField Text="First Name" Variant="Variant.Text" Style="width: 100%;" class="mb-5">
+                <ChildContent>
+                    <RadzenTextBox Name="FirstName" @bind-Value="@_hero.FirstName" Style="width: 100%;" Disabled="@_isLoading"/>
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="FirstName" Text="First name is required"/>
+                </Helper>
+            </RadzenFormField>
+            <RadzenFormField Text="Last Name" Variant="Variant.Text" Style="width: 100%;" class="mb-5">
+                <ChildContent >
+                    <RadzenTextBox Name="LastName" @bind-Value="@_hero.LastName" Style="width: 100%;" Disabled="@_isLoading"/>
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="LastName" Text="Last name is required"/>
+                </Helper>
+            </RadzenFormField>
+            <RadzenFormField Text="City of residence" Variant="Variant.Text" Style="width: 100%;" class="mb-5">
+                <ChildContent >
+                    <RadzenTextBox Name="City" @bind-Value="@_hero.City" Style="width: 100%;" Disabled="@_isLoading"/>
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="City" Text="City is required"/>
+                </Helper>
+            </RadzenFormField>
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Update hero" class="rz-ml-auto"/>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+</div>
 
 @code {
+
     [Parameter]
     public string Id { get; set; }
-    private Hero _hero = new Hero();
-    private bool _isLoading = false;
-    
+
+    private UpdateHeroDto _hero = new();
+    private bool _isLoading;
+
     protected override async Task OnInitializedAsync()
     {
         _isLoading = true;
+        NotificationService.Notify(NotificationSeverity.Info, "Loading", "Loading hero details...");
         try
         {
             int.TryParse(Id, out int heroId);
-            _hero = await HeroService.GetHeroAsync(heroId);
+            _hero = await HeroService.GetHeroForUpdateAsync(heroId);
+            Console.WriteLine(_hero.Id);
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            NotificationService.Notify(NotificationSeverity.Error, $"Error", $"Unable to load hero with ID '{Id}'.");
-            throw;
+            NotificationService.Notify(NotificationSeverity.Error, $"Error", e.Message);
         }
         finally
         {
             _isLoading = false;
             StateHasChanged();
+            Console.WriteLine("Hero details loaded");
         }
     }
 
-    private async Task SaveChanges()
+    async void OnSubmit(UpdateHeroDto hero)
     {
-        await HeroService.UpdateHeroAsync(new UpdateHeroDto());
+        NotificationService.Notify(NotificationSeverity.Info, "Updating", "Updating hero details...");
+        await HeroService.UpdateHeroAsync(hero);
+        NotificationService.Notify(NotificationSeverity.Success, "Success", "Hero details updated successfully");
         Navigation.NavigateTo("/heroes");
     }
 
-    private void CancelEdit()
+    void OnInvalidSubmit()
     {
-        Navigation.NavigateTo("/heroes");
+        NotificationService.Notify(NotificationSeverity.Error, "Error", "Input is invalid");
     }
+
 }

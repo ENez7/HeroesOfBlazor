@@ -30,14 +30,24 @@ public class HeroesService : IHeroesService
         return Task.FromResult(query);
     }
 
-    public Task<Hero> GetHeroAsync(int id)
+    public async Task<Hero> GetHeroAsync(int id)
     {
-        var result = _context.Heroes.FirstOrDefaultAsync(x => x.Id == id);
+        var result = await _context.Heroes.FirstOrDefaultAsync(x => x.Id == id);
         if (result == null)
         {
             throw new Exception($"Hero with id {id} not found.");
         }
         return result;
+    }
+
+    public async Task<UpdateHeroDto> GetHeroForUpdateAsync(int id)
+    {
+        var result = await _context.Heroes.FirstOrDefaultAsync(h => h.Id == id);
+        if (result == null)
+        {
+            throw new Exception($"Hero with id {id} not found.");
+        }
+        return _mapper.Map<UpdateHeroDto>(result);
     }
 
     public async Task<Hero> CreateHeroAsync(CreateHeroDto createHeroDto)
@@ -53,9 +63,12 @@ public class HeroesService : IHeroesService
         return hero;
     }
 
-    public Task<Hero> UpdateHeroAsync(UpdateHeroDto updateHeroDto)
+    public async Task<Hero> UpdateHeroAsync(UpdateHeroDto updateHeroDto)
     {
-        //TODO: Implement and throw exceptions if hero not found or name already exists
-        throw new NotImplementedException();
+        var existingHero = _context.Heroes.FirstOrDefault(x => x.Id == updateHeroDto.Id)!;
+        _mapper.Map(updateHeroDto, existingHero);
+        _context.Heroes.Update(existingHero);
+        await _context.SaveChangesAsync();
+        return existingHero;
     }
 }
