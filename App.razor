@@ -1,7 +1,21 @@
 ﻿<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col d-flex justify-content-center" style="height: 700px;">
+                                <!-- Content Goes Here -->
+                                <img src="/svg/403-Error.svg" style="max-width: 85%; max-height: 85%;" alt="Forbidden">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container d-flex flex-row-reverse">
+                        <RadzenButton Click="@CreditsNotAuthorized">Worker illustrations by Storyset</RadzenButton>
+                    </div>
+                </NotAuthorized>
+            </AuthorizeRouteView>
             <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
         </Found>
         <NotFound>
@@ -16,7 +30,7 @@
                     </div>
                 </div>
                 <div class="container d-flex flex-row-reverse">
-                    <RadzenButton Click="@Click">Web illustrations by Storyset</RadzenButton>
+                    <RadzenButton Click="@CreditsNotFound">Web illustrations by Storyset</RadzenButton>
                 </div>
             </LayoutView>
         </NotFound>
@@ -24,11 +38,18 @@
 </CascadingAuthenticationState>
 
 @code {
+
     [Inject]
     IJSRuntime? JsRuntime { get; set; }
-    
-    private async void Click()
+
+    private async void CreditsNotFound()
     {
         await JsRuntime!.InvokeVoidAsync("open", "https://storyset.com/web", "_blank");
     }
+
+    private async void CreditsNotAuthorized()
+    {
+        await JsRuntime!.InvokeVoidAsync("open", "https://storyset.com/worker", "_blank");
+    }
+
 }
