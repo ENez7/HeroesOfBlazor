@@ -1,9 +1,60 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+@inject IJSRuntime JsRuntime
 
-<h1>Hello, world!</h1>
+<PageTitle>Heroes of Blazor</PageTitle>
 
-Welcome to your new app.
+<RadzenText TextStyle="TextStyle.H2">Heroes of Blazor</RadzenText>
+<RadzenRow class="my-5">
+    <RadzenColumn Size="12" SizeMD="5" Class="rz-mb-3">
+        <p>
+            This is a basic CRUD application for managing heroes using Blazor. The project follows best practices and utilizes
+            Radzen Blazor components for a user-friendly interface.
+            <br/><br/>
+            If you are a registered user, you can start managing your heroes by navigating to the <strong>Heroes</strong> section.
+            If not, please log in to access the full functionality.
 
-<SurveyPrompt Title="How is Blazor working for you?"/>
+            You can find the source code of this application on <a href="">GitHub</a>
+        </p>
+    </RadzenColumn>
+    <RadzenColumn Size="12" SizeMD="7">
+        <RadzenCard Variant="Variant.Outlined" Class="rz-mb-3 rz-mx-auto" 
+                    Style="background-color: black; max-width: 500px; cursor: pointer;"
+                    @onclick="@Click">
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Gap="1rem" Class="rz-p-4">
+                <i class="bi bi-github" style="font-size: 4rem; color: white;"></i>
+                <RadzenStack Gap="0" class="mb-0">
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0 text-light">User</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1" class="text-light">
+                        <b>ENez7</b>
+                    </RadzenText>
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0 text-light">Repository</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1" class="text-light">
+                        <b>HeroesOfBlazor</b>
+                    </RadzenText>
+                </RadzenStack>
+            </RadzenStack>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="alert alert-success" role="alert">
+            Welcome back, @context.User.Identity?.Name!
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="alert alert-info" role="alert">
+            To get started, please log in or register.
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private async void Click()
+    {
+        await JsRuntime.InvokeVoidAsync("open", "https://github.com/ENez7", "_blank");
+    }
+}
