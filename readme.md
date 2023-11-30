@@ -18,7 +18,7 @@ The application uses SQL Server as the database management system. The following
 ```
 > You can change the database provider in the `Program.cs` file. Remember to install the corresponding NuGet package and uninstall the previous one.
 
-2. **Database Migrations [(Más info)](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=vs)**  
+2. **Database Migrations [(More info)](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=vs)**  
    To create migrations and then apply them to the database you can use the following commands:
 ```.NET CLI
 dotnet ef migrations add MigrationName
