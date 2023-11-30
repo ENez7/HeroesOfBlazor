@@ -40,7 +40,7 @@ Besides that, feel free to fork this repository and make your own changes.
 This was made as a learning project and it is not intended to be used in production.
 
 ---
-### Portabilidad y Contenerización
+### Portability and Containerization
 
 This project is Dockerized, which ensures portability and facilitates deployment in different environments. The `Dockerfile` provides the necessary instructions for the container creation.
 
