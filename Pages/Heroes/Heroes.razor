@@ -24,11 +24,25 @@
         <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">No heroes to display.</p>
     </EmptyTemplate>
     <Columns>
-        <RadzenDataGridColumn TItem="Hero" Title="Id" HeaderCssClass="fw-bold" Property="Id"/>
+        <RadzenDataGridColumn TItem="Hero" Title="Id" HeaderCssClass="fw-bold" Property="Id" Width="100px"/>
         <RadzenDataGridColumn TItem="Hero" Title="Hero Name" HeaderCssClass="fw-bold" Property="HeroName"/>
         <RadzenDataGridColumn TItem="Hero" Title="First Name" HeaderCssClass="fw-bold" Property="FirstName"/>
         <RadzenDataGridColumn TItem="Hero" Title="Last Name" HeaderCssClass="fw-bold" Property="LastName"/>
         <RadzenDataGridColumn TItem="Hero" Title="City" HeaderCssClass="fw-bold" Property="City"/>
+        <RadzenDataGridColumn TItem="Hero" Context="hero" Filterable="false" Sortable="false" 
+                              TextAlign="TextAlign.Center" Frozen="true" FrozenPosition="FrozenColumnPosition.Right"
+                              Width="150px">
+            <Template Context="hero">
+                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" 
+                              Size="ButtonSize.Medium" Click="@(args => EditHero(hero))" 
+                              @onclick:stopPropagation="true">
+                </RadzenButton>
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" 
+                              Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" 
+                              Click="@(args => DeleteHero(hero))"  @onclick:stopPropagation="true">
+                </RadzenButton>
+            </Template>
+        </RadzenDataGridColumn>
     </Columns>
 </RadzenDataGrid>
 
@@ -68,5 +82,15 @@
     private void CreateHero()
     {
         Navigation.NavigateTo("/heroes/create");
+    }
+
+    private void EditHero(Hero hero)
+    {
+        Navigation.NavigateTo("/heroes/edit/" + hero.Id);
+    }
+
+    private void DeleteHero(Hero hero)
+    {
+        Console.WriteLine(hero.City);
     }
 }

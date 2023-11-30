@@ -30,6 +30,16 @@ public class HeroesService : IHeroesService
         return Task.FromResult(query);
     }
 
+    public Task<Hero> GetHeroAsync(int id)
+    {
+        var result = _context.Heroes.FirstOrDefaultAsync(x => x.Id == id);
+        if (result == null)
+        {
+            throw new Exception($"Hero with id {id} not found.");
+        }
+        return result;
+    }
+
     public async Task<Hero> CreateHeroAsync(CreateHeroDto createHeroDto)
     {
         var existingHero = await _context.Heroes.FirstOrDefaultAsync(x => x.HeroName == createHeroDto.HeroName);
@@ -41,5 +51,11 @@ public class HeroesService : IHeroesService
         _context.Heroes.Add(hero);
         await _context.SaveChangesAsync();
         return hero;
+    }
+
+    public Task<Hero> UpdateHeroAsync(UpdateHeroDto updateHeroDto)
+    {
+        //TODO: Implement and throw exceptions if hero not found or name already exists
+        throw new NotImplementedException();
     }
 }

@@ -1,0 +1,71 @@
+@page "/heroes/edit/{id}"
+
+@using HeroesOfBlazor.Entities
+@using HeroesOfBlazor.Interfaces
+@using HeroesOfBlazor.Dto
+
+@inject IHeroesService HeroService
+@inject NotificationService NotificationService
+@inject NavigationManager Navigation
+
+<h3 class="mb-5">Edit Hero</h3>
+
+<h4>Hero Details</h4>
+<hr>
+
+<RadzenColumn Size="12" SizeMD="6" SizeLG="3">
+    <RadzenTemplateForm TItem="CreateHeroDto">
+        <RadzenFormField Text="Hero's Name" Variant="Variant.Text" Style="width: 100%;" class="my-5">
+            <RadzenTextBox @bind-Value="@_hero.HeroName" Style="width: 100%;" ReadOnly="true"/>
+        </RadzenFormField>
+        <RadzenFormField Text="First Name" Variant="Variant.Text" Style="width: 100%;" class="mb-5">
+            <RadzenTextBox @bind-Value="@_hero.FirstName" Style="width: 100%;"/>
+        </RadzenFormField>
+        <RadzenFormField Text="Last Name" Variant="Variant.Text" Style="width: 100%;" class="mb-5">
+            <RadzenTextBox @bind-Value="@_hero.LastName" Style="width: 100%;"/>
+        </RadzenFormField>
+        <RadzenFormField Text="City of residence" Variant="Variant.Text" Style="width: 100%;" class="mb-5">
+            <RadzenTextBox @bind-Value="@_hero.City" Style="width: 100%;"/>
+        </RadzenFormField>
+        <RadzenButton Text="Update hero"/>
+    </RadzenTemplateForm>
+</RadzenColumn>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    private Hero _hero = new Hero();
+    private bool _isLoading = false;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+        try
+        {
+            int.TryParse(Id, out int heroId);
+            _hero = await HeroService.GetHeroAsync(heroId);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            NotificationService.Notify(NotificationSeverity.Error, $"Error", $"Unable to load hero with ID '{Id}'.");
+            throw;
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SaveChanges()
+    {
+        await HeroService.UpdateHeroAsync(new UpdateHeroDto());
+        Navigation.NavigateTo("/heroes");
+    }
+
+    private void CancelEdit()
+    {
+        Navigation.NavigateTo("/heroes");
+    }
+}
