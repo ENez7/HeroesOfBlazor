@@ -24,6 +24,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddRadzenComponents();
 
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
 builder.Services
     .AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 builder.Services.AddScoped<IHeroesService, HeroesService>();

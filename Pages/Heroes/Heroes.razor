@@ -1,11 +1,15 @@
 @page "/heroes"
+
 @using HeroesOfBlazor.Interfaces
 @using HeroesOfBlazor.Entities
 @using System.Linq.Dynamic.Core
+
 @inject IHeroesService HeroesService
+@inject NavigationManager Navigation
 
 <h3>Heroes</h3>
 <RadzenButton Text="Reset Grid" Click="@Reset" class="my-5"/>
+<RadzenButton Text="Create Hero" Click="@CreateHero" class="my-5"/>
 <RadzenDataGrid Count="@_count" Data="@_heroes" TItem="Hero"
                 @ref="_grid" IsLoading="@_isLoading" LoadData="@LoadData"
                 AllowFiltering="true" AllowColumnResize="false" AllowAlternatingRows="false"
@@ -29,7 +33,7 @@
 </RadzenDataGrid>
 
 @code {
-    private RadzenDataGrid<Hero> _grid;
+    private RadzenDataGrid<Hero> _grid = null!;
     private IEnumerable<Hero>? _heroes;
     private bool _isLoading = false;
     private int _count = 0;
@@ -61,4 +65,8 @@
         await _grid.FirstPage(true);
     }
 
+    private void CreateHero()
+    {
+        Navigation.NavigateTo("/heroes/create");
+    }
 }

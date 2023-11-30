@@ -1,0 +1,83 @@
+@page "/heroes/create"
+
+@using HeroesOfBlazor.Dto
+@using HeroesOfBlazor.Interfaces
+
+@inject IHeroesService HeroesService
+@inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+
+<h3>Create New Hero</h3>
+
+<div Class="rz-p-0 rz-p-md-12">
+    <RadzenTemplateForm TItem="CreateHeroDto" Data="@_newHero" Submit="@OnSubmit" InvalidSubmit="@OnInvalidSubmit">
+        <RadzenStack Gap="1rem" Class="rz-p-sm-12">
+            <RadzenFormField Text="Hero Name" Variant="Variant.Text">
+                <ChildContent>
+                    <RadzenTextBox Name="HeroName" @bind-Value="@_newHero.HeroName" Disabled="@_isSubmitting"/>
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="HeroName" Text="Hero's name is required" />
+                </Helper>
+            </RadzenFormField>
+            <RadzenFormField Text="First Name" Variant="Variant.Text">
+                <ChildContent>
+                    <RadzenTextBox Name="FirstName" @bind-Value="@_newHero.FirstName" Disabled="@_isSubmitting"/>
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="FirstName" Text="First name is required" />
+                </Helper>
+            </RadzenFormField>
+            <RadzenFormField Text="Last Name" Variant="Variant.Text">
+                <ChildContent>
+                    <RadzenTextBox Name="LastName" @bind-Value="@_newHero.LastName" Disabled="@_isSubmitting"/>
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="LastName" Text="Last name is required" />
+                </Helper>
+            </RadzenFormField>
+            <RadzenFormField Text="City" Variant="Variant.Text">
+                <ChildContent>
+                    <RadzenTextBox Name="City" @bind-Value="@_newHero.City" Disabled="@_isSubmitting"></RadzenTextBox>
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="City" Text="City is required" />
+                </Helper>
+            </RadzenFormField>
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Create Hero" Class="rz-mt-2"  Disabled="@_isSubmitting"/>
+        </RadzenStack>
+    </RadzenTemplateForm>
+</div>
+
+@code {
+    CreateHeroDto _newHero = new CreateHeroDto();
+    private bool _isSubmitting = false;
+
+    async void OnSubmit(CreateHeroDto hero)
+    {
+        _isSubmitting = true;
+        try
+        {
+            await HeroesService.CreateHeroAsync(hero);
+            NotificationService.Notify(NotificationSeverity.Success, "Success", "Hero created");
+            NavigationManager.NavigateTo("/heroes", replace: true);
+        }
+        catch (Exception e)
+        {
+            // TODO: Change to Logger
+            Console.WriteLine(e);
+            NotificationService.Notify(NotificationSeverity.Error, "Error", "Hero with this name already exists");
+            await Task.Delay(TimeSpan.FromSeconds(3));
+        }
+        finally
+        {
+            _isSubmitting = false;
+            StateHasChanged();
+        }
+    }
+    
+    void OnInvalidSubmit()
+    {
+        NotificationService.Notify(NotificationSeverity.Error, "Error", "Input is invalid");
+    }
+}
