@@ -6,7 +6,7 @@
 
 @inject IHeroesService HeroesService
 @inject NavigationManager Navigation
-@inject NotificationService
+@inject NotificationService NotificationService
 
 <h3>Heroes</h3>
 <RadzenButton Text="Reset Grid" Click="@Reset" class="my-5"/>
@@ -90,8 +90,11 @@
         Navigation.NavigateTo("/heroes/edit/" + hero.Id);
     }
 
-    private void DeleteHero(Hero hero)
+    private async void DeleteHero(Hero hero)
     {
-        Console.WriteLine(hero.City);
+        NotificationService.Notify(NotificationSeverity.Info, "Deleting hero", "Please wait...");
+        await HeroesService.DeleteHeroAsync(hero.Id);
+        NotificationService.Notify(NotificationSeverity.Success, "Hero deleted", "Hero successfully deleted.");
+        await Reset();
     }
 }

@@ -71,4 +71,11 @@ public class HeroesService : IHeroesService
         await _context.SaveChangesAsync();
         return existingHero;
     }
+
+    public async Task DeleteHeroAsync(int id)
+    {
+        var existingHero = await _context.Heroes.FirstOrDefaultAsync(x => x.Id == id);
+        _context.Heroes.Remove(existingHero!);
+        await _context.SaveChangesAsync();
+    }
 }

@@ -11,4 +11,5 @@ public interface IHeroesService
     public Task<UpdateHeroDto> GetHeroForUpdateAsync(int id);
     public Task<Hero> CreateHeroAsync(CreateHeroDto createHeroDto);
     public Task<Hero> UpdateHeroAsync(UpdateHeroDto updateHeroDto);
+    public Task DeleteHeroAsync(int id);
 }
